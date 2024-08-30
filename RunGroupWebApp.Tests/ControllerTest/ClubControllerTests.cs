@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using RunGroopWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using RunGroopWebApp.Controllers;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RunGroupWebApp.Tests.ControllerTest
 {
@@ -39,8 +41,17 @@ namespace RunGroupWebApp.Tests.ControllerTest
             A.CallTo(() => _clubRepository.GetAll()).Returns(clubs);
 
             //Act
+            var result = _clubController.Index();
 
-            //Assert
+            //Assert - Object check actions
+            result.Should().BeOfType<Task<IActionResult>>();
+        }
+
+        [Fact]
+        public void ClubContoller_Detail_ReturnsSuccess()
+        {
+            //Arrange
+
         }
         
     }

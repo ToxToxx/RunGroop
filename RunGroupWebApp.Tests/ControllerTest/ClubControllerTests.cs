@@ -48,9 +48,19 @@ namespace RunGroupWebApp.Tests.ControllerTest
         }
 
         [Fact]
-        public void ClubContoller_Detail_ReturnsSuccess()
+        public void ClubContoller_DetailClub_ReturnsSuccess()
         {
             //Arrange
+            var id = 1;
+            var club =  A.Fake<Club>();
+            A.CallTo(() => _clubRepository.GetByIdAsync(id)).Returns(club);
+
+            
+            //Act
+            var result = _clubController.DetailClub(id, club.ToString());
+
+            //Assert
+            result.Should().BeOfType<Task<IActionResult>>();
 
         }
         

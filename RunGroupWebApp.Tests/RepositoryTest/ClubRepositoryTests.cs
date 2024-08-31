@@ -1,29 +1,35 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using RunGroopWebApp.Data;
 using RunGroopWebApp.Data.Enum;
 using RunGroopWebApp.Models;
 using RunGroopWebApp.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace RunGroupWebApp.Tests.RepositoryTest
 {
+    /// <summary>
+    /// This class contains unit tests for the ClubRepository.
+    /// </summary>
     public class ClubRepositoryTests
     {
+        /// <summary>
+        /// Creates an in-memory database context for testing purposes.
+        /// Ensures the database is created and seeded with initial data.
+        /// </summary>
+        /// <returns>A new instance of ApplicationDbContext with an in-memory database.</returns>
         private async Task<ApplicationDbContext> GetDbContext()
         {
-            var options =
-                new DbContextOptionsBuilder<ApplicationDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
+
             var databaseContext = new ApplicationDbContext(options);
             databaseContext.Database.EnsureCreated();
-            if(await databaseContext.Clubs.CountAsync() < 0)
+
+            if (await databaseContext.Clubs.CountAsync() < 1)
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -41,16 +47,21 @@ namespace RunGroupWebApp.Tests.RepositoryTest
                               State = "DPR"
                           }
                       });
-                    await databaseContext.SaveChangesAsync();
                 }
+                await databaseContext.SaveChangesAsync();
             }
+
             return databaseContext;
         }
 
+        /// <summary>
+        /// Tests the Add method of the ClubRepository.
+        /// Verifies that the Add method returns true when a club is successfully added.
+        /// </summary>
         [Fact]
         public async void ClubRepository_Add_ReturnsBool()
         {
-            //Arrange
+            // Arrange: Create a new Club object and a repository instance with an in-memory database.
             var club = new Club()
             {
                 Title = "Begovoy club 1",
@@ -68,26 +79,29 @@ namespace RunGroupWebApp.Tests.RepositoryTest
             var dbContext = await GetDbContext();
             var clubRepository = new ClubRepository(dbContext);
 
-            //Act
+            // Act: Add the club to the repository.
             var result = clubRepository.Add(club);
 
-            //Assert
+            // Assert: Ensure the Add method returns true.
             result.Should().BeTrue();
-
         }
 
+        /// <summary>
+        /// Tests the GetByIdAsync method of the ClubRepository.
+        /// Verifies that a club is returned when queried by a valid ID.
+        /// </summary>
         [Fact]
         public async void ClubRepository_GetByIdAsync_ReturnsClub()
         {
-            //Arrange
+            // Arrange: Use an existing club ID and create a repository instance with an in-memory database.
             var id = 1;
             var dbContext = await GetDbContext();
             var clubRepository = new ClubRepository(dbContext);
 
-            //Act
+            // Act: Retrieve the club by ID.
             var result = clubRepository.GetByIdAsync(id);
 
-            //Assert
+            // Assert: Ensure the result is not null and of type Task<Club>.
             result.Should().NotBeNull();
             result.Should().BeOfType<Task<Club>>();
         }

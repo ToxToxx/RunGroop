@@ -88,7 +88,8 @@ namespace RunGroupWebApp.Tests.RepositoryTest
             var result = clubRepository.GetByIdAsync(id);
 
             //Assert
-
+            result.Should().NotBeNull();
+            result.Should().BeOfType<Task<Club>>();
         }
     }
 }
